@@ -1,0 +1,13 @@
+# Large data files (1.6 GB) — original data is public on Kaggle
+*.csv
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
