@@ -104,6 +104,16 @@ One subtlety worth flagging: **21.6% of the money is at risk, but only ~20% of l
 
 ---
 
+## Part 3 — An AI layer that writes the analyst's takeaway
+
+A dashboard tells you *what happened*; a hiring manager wants to know *what to do about it*. So I added an **AI insight layer** (`ai_insights.py`): pandas boils the data down to a small facts table (default rate + dollars by grade), and that table is passed to a large language model (**Llama 3.3 via the Groq API**) with a role-based prompt asking for a finding → dollar impact → recommendation. The result — generated automatically from the real numbers, not written by hand:
+
+> 🤖 *"The default rate increases sharply as loan grade deteriorates, with the riskiest grade G loans defaulting at 50.09%, more than 8 times the 6.09% rate of grade A. The total lent to the four riskiest grades (D–G) is approximately $2.25 billion, exposing a significant portion of the portfolio to high default risk. To mitigate this, I recommend immediately increasing reserve requirements for grades D, E, F, and G by at least 20%."*
+
+Every figure it cites traces back to the cleaned dataset. The API key is loaded from a gitignored `.env` (never hard-coded), and the summariser is a reusable `generate_insight()` function, so any facts table can be turned into an executive summary. This turns the project from **descriptive** ("here's the default rate") into **prescriptive** ("here's the risk, the money, and the fix").
+
+---
+
 ## Recommendations a credit team could act on
 
 1. **Re-examine pricing on the lowest grades (F/G).** If a 50%-default grade only earns 28% interest, the math may not work — either raise rates or tighten approval.
@@ -118,6 +128,7 @@ One subtlety worth flagging: **21.6% of the money is at risk, but only ~20% of l
 - **Python / pandas** — data cleaning, type fixing, missing-value handling, analysis
 - **Jupyter Notebook** — the full analysis ([`lending_club_analysis.ipynb`](lending_club_analysis.ipynb)), built to run top-to-bottom reproducibly
 - **Tableau Public** — the [interactive dashboard](https://public.tableau.com/app/profile/nirmala.choudhary/viz/LendingClubCredit-RiskAnalysis/Dashboard1)
+- **LLM / Groq API (Llama 3.3)** — the AI insight layer ([`ai_insights.py`](ai_insights.py)) that auto-writes the executive takeaway, with secure `.env` key handling and structured prompt design
 - **Framework** — the standard analyst workflow: Ask → Prepare → Process → Analyze → Share → Act
 
 > The raw and cleaned CSVs (1.6 GB) are excluded from this repo. The original data is public on Kaggle; `LCDataDictionary.xlsx` documents every column.
